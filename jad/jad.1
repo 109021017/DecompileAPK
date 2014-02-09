@@ -1,0 +1,348 @@
+.TH jad 1 "http://www.kpdus.com/jad.html" Software
+.\"----------------------------
+.SH "NAME"
+.\"----------------------------
+jad \- The Fast JAva Decompiler
+.\"----------------------------
+.SH "SYNOPSIS"
+.\"----------------------------
+.B jdb
+[
+.I options
+] <
+.I filenames
+>
+.\"----------------------------
+.SH "PARAMETERS"
+.\"----------------------------
+.TP 15
+.I options
+Command\-line options.
+.TP
+.I filenames
+Name of the files to decompile.
+.\"----------------------------
+.SH "DESCRIPTION"
+.\"----------------------------
+Jad is a Java decompiler, i.e. program that reads one or more
+Java class files and converts them into Java source files which
+can be compiled again.
+
+Jad is a 100% pure C++ program and it generally works several
+times faster than decompilers written in Java.  Jad does not use
+the Java runtime for its functioning, therefore no special setup
+is required (like changes to the CLASSPATH variable).
+
+Jad can be used:
+
+    \- for recovering lost source codes.
+    \- for exploring the sources of Java runtime libraries.
+    \- as a Java disassembler.
+    \- as a Java source code cleaner and beautifier.
+
+Jad expects that supplied Java class files are valid ones,
+i.e. they can pass the Java Virtual Machine (JVM) verification
+successfully.
+
+The main features of Jad include:
+
+    \- Enhanced readability of the generated source code
+    \- Ability to comment Java source code with JVM
+      bytecodes.  Useful for verification and
+      educational purposes.
+    \- Full support for inner and anonymous classes.
+    \- Fast decompilation and simple setup.
+    \- Automatic conversion of identifiers garbled by Java
+      obfuscators into valid ones.
+    \- Free for non-commercial use. If you would like
+      to use Jad for commercial purposes, please contact
+      the author for conditions.
+
+
+To decompile a single Java class file \fIexample1.class\fR
+type the following:
+
+    \fB# jad example1.class\fR
+
+This command creates file \fIexample1.jad\fR in the current
+directory.  If such file already exists Jad asks whether you
+want to overwrite it or not.  Option \fB\-o\fR permits
+overwriting without a confirmation.
+
+You can omit \fI.class\fR extension and/or use wildcards in the
+names of input files.
+
+Option \fB\-s\fR \fI<ext>\fR allows to change output file extension:
+
+    \fB# jad \-sjava example1.class\fR
+
+This command creates file \fIexample1.java\fR.  Be careful
+when using options \fB\-o\fR and \fB\-sjava\fR together,
+because Jad can accidentally overwrite your own source files.
+
+Jad uses Java class name as an output file name.  For example,
+if class file \fIexample1.class\fR contains Java class \fItest1\fR
+then Jad will create file \fItest1.jad\fR rather than \fIexample1.jad\fR.
+If you want to specify your own output file name use the
+output redirection:
+
+    \fB# jad \-p example1.class > myexm1.java\fR
+
+Option \-d allows you to specify another directory for output files,
+which are created, by default, in the current directory.  For example:
+
+    \fB# jad \-o \-dtest \-sjava *.class\fR
+
+    OR
+
+    \fB# jad \-o \-d test \-s java *.class\fR
+
+This command decompiles all \fI.class\fR files in the current
+directory and places all output files with extension
+\fI.java\fR into directory \fItest\fR.
+
+If you want to decompile the whole tree of Java classes,
+use the following command:
+
+    \fB# jad \-o \-r \-sjava \-dsrc tree/**/*.class\fR
+
+This command decompiles all \fI.class\fR files located in all
+subdirectories of \fItree\fR and creates output files in
+subdirectories of \fIsrc\fR according to package names of
+classes.  For example, if file \fItree/a/b/c.class\fR contains
+class \fIc\fR from package \fIa.b\fR, then output file will
+have a name \fIsrc/a/b/c.java\fR.
+
+Note the use of the "two stars" wildcard (\fI**\fR) in the previous
+command.  It is handled by Jad rather than the command shell, so on
+UNIX the last argument should be single\-quoted:
+
+    \fB# jad \-o \-r \-sjava \-dsrc 'tree/**/*.class'\fR
+
+In a case you want to check the accuracy of the decompilation
+or just curious, there is an option \fB\-a\fR which tells Jad to
+annotate the output with Java Virtual Machine bytecodes.
+
+Jad supports the inner and anonymous classes.  When Jad expands
+wildcards in the input file names, it automatically skips
+matching inner classes.  On UNIX Jad skips inner classes
+if there is more than one class specified in the command line.  Jad
+looks for inner classes in the directory of their top\-level
+container class.
+.\"----------------------------
+.SS "OPTIONS"
+.\"----------------------------
+Jad accepts the following options:
+.TP 14
+.BI \-a
+annotate the output with JVM bytecodes (default: off)
+.TP 14
+.BI \-af
+same as \-a, but output fully qualified names when annotating
+.TP 14
+.BI \-clear
+clear all prefixes, including the default ones
+.TP 14
+.BI \-cl
+alias for \-clear
+.TP 14
+.BI \-b
+output redundant braces (e.g., if(a) { b(); }, default: off)
+.TP 14
+.BI "-d " "<dir>"
+directory for output files (will be created when necessary)
+.TP 14
+.BI \-dead
+try to decompile dead parts of code (if any) (default: off)
+.TP 14
+.BI \-disass
+disassemble method bytecodes (no Java source generated)
+.TP 14
+.BI \-f
+output fully qualified names for classes/fields/methods (default: off)
+.TP 14
+.BI \-ff
+output class fields before methods (default: after methods)
+.TP 14
+.BI \-i
+output default initializers for all non\-final fields
+.TP 14
+.BI \-i <num>
+split strings into pieces of maximum \fI<num>\fR chars (default: off)
+.TP 14
+.BI \-lnc
+annotate the output with line numbers (default: off)
+.TP 14
+.BI \-lradix <num>
+display long integers using the specified radix (8, 14 or 16)
+.TP 14
+.BI \-nl
+split strings on newline character (default: off)
+.TP 14
+.BI \-nocast
+do not generate auxiliary casts
+.TP 14
+.BI \-nocode
+do not generate the source code for methods
+.TP 14
+.BI \-noconv
+do not convert Java identifiers (default: convert)
+.TP 14
+.BI \-noctor
+suppress the empty constructors
+.TP 14
+.BI \-nodos
+do not check for class files written in DOS mode (CR before NL, default: 
+check)
+.TP 14
+.BI \-nofd
+do not disambiguate fields with the same names by adding signatures to their 
+names (default: do)
+.TP 14
+.BI \-noinner
+turn off the support of inner classes (default: on)
+.TP 14
+.BI \-nolvt
+ignore Local Variable Table information
+.TP 14
+.BI \-nonlb
+do not output a newline before opening brace (default: do)
+.TP 14
+.BI \-o
+overwrite output files without confirmation (default: off)
+.TP 14
+.BI \-p
+send decompiled code to STDOUT (e.g., for piping)
+.TP 14
+.BI \-pi <num>
+pack imports into one line after \fI<num>\fR imports (default: 3)
+.TP 14
+.BI \-pv<num>
+pack fields with identical types into one line (default: off)
+.TP 14
+.BI \-pa <pfx>
+prefix for all packages in generated source files
+.TP 14
+.BI \-pc <pfx>
+prefix for classes with numerical names (default: _cls)
+.TP 14
+.BI \-pf <pfx>
+prefix for fields with numerical names (default: _fld)
+.TP 14
+.BI \-pe <pfx>
+prefix for unused exception names (default: _ex)
+.TP 14
+.BI \-pl <pfx>
+prefix for locals with numerical names (default: _lcl)
+..TP 14
+..BI \-pm <pfx>
+prefix for methods with numerical names (default: _mth)
+..TP 14
+..BI \-pp <pfx>
+prefix for method parms with numerical names (default: _prm)
+..TP 14
+..BI \-r
+restore package directory structrure
+..TP 14
+..BI \-radix<num>
+display integers using the specified radix (8, 14 or 16)
+..TP 14
+..BI \-s <ext>
+output file extension (by default '.jad')
+..TP 14
+..BI \-safe
+generate additional casts to disambiguate methods/fields (default: off)
+..TP 14
+..BI \-space
+output space between keyword (if/for/while/etc) and expression (default: 
+off)
+..TP 14
+..BI \-stat
+display the total number of processed classes/methods/fields
+..TP 14
+..BI \-t
+use tabs instead of spaces for indentation
+..TP 14
+..BI \-t<num>
+use \fI<num>\fR spaces for indentation (default: 4)
+..TP 14
+..BI \-v
+display method names being decompiled
+..TP 14
+..BI \-8
+convert UNICODE strings into 8\-bit strings using the current
+ANSI code page (Win32 only)
+..TP 14
+..BI \-&
+redirect STDERR to STDOUT (Win32 only)
+
+..ES "Single\-word options
+All single\-word options have three formats:
+..TP 14
+..BI \-o
+"'reverses' value of an option"
+..TP 14
+..BI -o+
+set value to 'true' or 'on'
+..TP 14
+..BI -o\-
+set value to 'false' or 'off'
+..SH "ENVIRONMENT"
+You can specify the options you want to be set by default in
+the environment variable \fBJAD_OPTIONS\fR.  For example:
+
+    \fBJAD_OPTIONS=\-ff+ \-nonlb+ \-t+ \-space+\fR
+..SH "BUGS AND LIMITATIONS"
+\- In certain cases when decompiling classes which contain inner classes,
+Jad cannot reliably sort out the extra arguments added to class
+constructors by Java compiler. In those cases Jad can generate
+constructors with an incorrect number of arguments or can fail
+to declare some local variables as final.
+
+\- ZIP and JAR files are not supported. However you can unzip those
+files and decompile the whole class tree.
+
+\- In those rare cases when Jad is unable to fully decompile constructs
+like labeled blocks with breaks or nested loops with inter-loop
+break/continue statements it generates the source with labels and
+goto statements which reflects program's control flow and displays
+the message "Couldn't fully decompile method <name>". Also when Jad
+could not reconstruct all try-catch-finally statements it displays
+the message "Couldn't resolve all exception handlers in method <name>".
+
+\- Currently Jad ignores the contents of the Line Number Table
+Attribute and the Source File Attribute.
+
+\- Currently Jad makes no use of the Java class hierarchy
+information. Consequently, Jad always chooses java.lang.Object
+as a common superclass of two different classes and inserts
+auxiliary casts where necessary.
+
+\- Jad does not handle inlined functions well.
+..SH "AUTHOR"
+Written by Pavel Kouznetsov (\fBjad@kpdus.com\fR).
+..SH "WEBSITE"
+\fBhttp://www.kpdus.com/jad.html\fR
+..SH "COPYRIGHT"
+Copyright 1997-2001 Pavel Kouznetsov. All rights reserved.
+
+THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+THE SOFTWARE IS NOT DESIGNED OR INTENDED FOR USE IN ON-LINE CONTROL
+OF AIRCRAFT, AIR TRAFFIC, AIRCRAFT NAVIGATION OR AIRCRAFT
+COMMUNICATIONS; OR IN THE DESIGN, CONSTRUCTION, OPERATION OR
+MAINTENANCE OF ANY NUCLEAR FACILITY. THE AUTHOR DISCLAIMS ANY
+EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR SUCH USES. YOU MUST
+REPRESENT AND WARRANT THAT YOU WILL NOT USE THE SOFTWARE FOR
+SUCH PURPOSES.
+
